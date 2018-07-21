@@ -1,5 +1,7 @@
 package com.snowwolf.dtotool.config;
 
+import com.snowwolf.dtotool.yml.GetMapperYml;
+import com.snowwolf.dtotool.yml.GetMockYml;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -15,6 +17,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 /**
@@ -27,17 +30,18 @@ import javax.sql.DataSource;
 @Configuration
 @MapperScan(basePackages = "com.snowwolf.dtotool.mapper.mock", sqlSessionTemplateRef  = "mockSqlSessionTemplate")
 public class MockDateSourceConfig {
-    @Autowired
-    private Environment env;
+    @Resource
+    private GetMockYml getMockYml;
+    @Resource
+    private GetMapperYml getMapperYml;
 
     @Bean(name = "mockDataSource")
-    @ConfigurationProperties(prefix = "spring.datasource.mock")
     public DataSource mockDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getProperty("spring.datasource.mock.driverClassName"));
-        dataSource.setUrl(env.getProperty("spring.datasource.mock.url"));
-        dataSource.setUsername(env.getProperty("spring.datasource.mock.username"));
-        dataSource.setPassword(env.getProperty("spring.datasource.mock.password"));
+        dataSource.setDriverClassName(getMockYml.getDriverClassName());
+        dataSource.setUrl(getMockYml.getUrl());
+        dataSource.setUsername(getMockYml.getUsername());
+        dataSource.setPassword(getMockYml.getPassword());
         return dataSource;
     }
 
@@ -45,7 +49,7 @@ public class MockDateSourceConfig {
     public SqlSessionFactory mockSqlSessionFactory(@Qualifier("mockDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
-        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mybatis/mapper/mock/*.xml"));
+        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(getMapperYml.getMock()));
         return bean.getObject();
     }
 

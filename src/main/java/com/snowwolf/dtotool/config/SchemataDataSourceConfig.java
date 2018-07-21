@@ -1,21 +1,22 @@
 package com.snowwolf.dtotool.config;
 
+import com.snowwolf.dtotool.yml.GetMapperYml;
+import com.snowwolf.dtotool.yml.GetMockYml;
+import com.snowwolf.dtotool.yml.GetSchemataYml;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 /**
@@ -28,18 +29,20 @@ import javax.sql.DataSource;
 @Configuration
 @MapperScan(basePackages = "com.snowwolf.dtotool.mapper.schemata", sqlSessionTemplateRef  = "schemataSqlSessionTemplate")
 public class SchemataDataSourceConfig {
-    @Autowired
-    private Environment env;
+    @Resource
+    private GetSchemataYml getSchemataYml;
+    @Resource
+    private GetMapperYml getMapperYml;
 
     @Bean(name = "schemataDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.schemata")
     @Primary
     public DataSource schemataDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getProperty("spring.datasource.schemata.driverClassName"));
-        dataSource.setUrl(env.getProperty("spring.datasource.schemata.url"));
-        dataSource.setUsername(env.getProperty("spring.datasource.schemata.username"));
-        dataSource.setPassword(env.getProperty("spring.datasource.schemata.password"));
+        dataSource.setDriverClassName(getSchemataYml.getDriverClassName());
+        dataSource.setUrl(getSchemataYml.getUrl());
+        dataSource.setUsername(getSchemataYml.getUsername());
+        dataSource.setPassword(getSchemataYml.getPassword());
         return dataSource;
     }
 
@@ -48,7 +51,7 @@ public class SchemataDataSourceConfig {
     public SqlSessionFactory schemataSqlSessionFactory(@Qualifier("schemataDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
-        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mybatis/mapper/schemata/*.xml"));
+        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(getMapperYml.getSchemata()));
         return bean.getObject();
     }
 

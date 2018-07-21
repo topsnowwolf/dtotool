@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    schemata:
+      driverClassName: com.mysql.jdbc.Driver
+      username: root
+      password: 123456
+      url: jdbc:mysql://localhost/information_schema?characterEncoding=utf-8&useSSL=false
+    mock:
+      driverClassName: com.mysql.jdbc.Driver
+      username: root
+      password: 123456
+      url: jdbc:mysql://localhost/wolf?characterEncoding=utf-8&useSSL=false
+mybatis:
+  mapper:
+    mock: classpath:mybatis/mapper/mock/*.xml
+    schemata: classpath:mybatis/mapper/schemata/*.xml
