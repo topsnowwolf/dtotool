@@ -1,6 +1,7 @@
 package com.snowwolf.dtotool.service;
 
 import com.snowwolf.dtotool.mode.SchemataVo;
+import com.snowwolf.dtotool.view.SchemataView;
 
 import java.util.List;
 
@@ -12,6 +13,6 @@ import java.util.List;
  * @versions：0.1.0
  */
 public interface ISchemataService {
-    List<SchemataVo> getAll();
+    SchemataView getAll();
     SchemataVo getOne(String schemaName);
 }

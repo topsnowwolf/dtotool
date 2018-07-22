@@ -1,5 +1,11 @@
 package com.snowwolf.dtotool.mapper.schemata;
 
+import com.snowwolf.dtotool.dto.TableReq;
+import com.snowwolf.dtotool.mode.ColumnVo;
+import com.snowwolf.dtotool.mode.TableVo;
+
+import java.util.List;
+
 /**
  * @author: topsnowwolf
  * @description:
@@ -8,4 +14,5 @@ package com.snowwolf.dtotool.mapper.schemata;
  * @versions：0.1.0
  */
 public interface ColumnMapper {
+    List<ColumnVo> findTableByTB(TableReq tableReq);
 }

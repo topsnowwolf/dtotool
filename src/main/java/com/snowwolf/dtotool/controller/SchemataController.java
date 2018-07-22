@@ -1,14 +1,19 @@
 package com.snowwolf.dtotool.controller;
 
+import com.snowwolf.dtotool.dto.TableReq;
 import com.snowwolf.dtotool.mapper.schemata.SchemataMapper;
 import com.snowwolf.dtotool.mode.SchemataVo;
+import com.snowwolf.dtotool.service.IColumnService;
 import com.snowwolf.dtotool.service.ISchemataService;
-import com.snowwolf.dtotool.view.SchemataView;
+import com.snowwolf.dtotool.service.ITableService;
+import com.snowwolf.dtotool.view.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,20 +23,44 @@ import java.util.List;
  * @modified by:
  * @versions：0.1.0
  */
+@Slf4j
 @RestController
 @RequestMapping("/db")
 public class SchemataController {
     @Autowired
     private ISchemataService schemataService;
+    @Autowired
+    private ITableService tableService;
+    @Autowired
+    private IColumnService columnService;
 
-    @GetMapping("/all")
+    /**
+     * 查询所有的库
+     * @return
+     */
+    @GetMapping("/findAllDB")
     public SchemataView findAll(){
-        SchemataView schemataView = new SchemataView();
-        List<SchemataVo> list = schemataService.getAll();
-        schemataView.setList(list);
-        schemataView.setCode("0000");
-        schemataView.setMsg("SUCCESS");
-        return schemataView;
+        return schemataService.getAll();
     }
 
+    /**
+     * 查询数据库下的表
+     * @param dbName
+     * @return
+     */
+    @GetMapping("/findTable")
+    public TableView findTableByDB(String dbName){
+        log.info("----");
+        return tableService.findTableByDB(dbName);
+    }
+
+    /**
+     * 查询表的结构
+     * @param tableReq
+     * @return
+     */
+    @GetMapping("/findColum")
+    public ColumView findColumByTB(TableReq tableReq){
+        return columnService.findTableByTB(tableReq);
+    }
 }

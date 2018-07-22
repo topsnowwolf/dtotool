@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.snowwolf.dtotool.mapper.schemata.TableMapper" >
+    <resultMap id="BaseResultMap" type="com.snowwolf.dtotool.mode.TableVo" >
+        <result column="TABLE_SCHEMA" property="tableSchema" jdbcType="VARCHAR" />
+        <result column="TABLE_NAME" property="tableName" jdbcType="VARCHAR" />
+        <result column="TABLE_TYPE" property="tableType" jdbcType="VARCHAR"/>
+        <result column="ENGINE" property="engine" jdbcType="VARCHAR" />
+        <result column="TABLE_COMMENT" property="tableComment" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <sql id="Base_Column_List" >
+        TABLE_SCHEMA, TABLE_NAME, TABLE_TYPE, ENGINE,TABLE_COMMENT
+    </sql>
+
+    <select id="findTableByDB" parameterType="java.lang.String" resultMap="BaseResultMap"  >
+       SELECT 
+       <include refid="Base_Column_List" />
+	   FROM TABLES
+        WHERE TABLE_SCHEMA = #{dbName}
+    </select>
+</mapper>
