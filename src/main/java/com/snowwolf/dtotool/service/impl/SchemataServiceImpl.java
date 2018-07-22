@@ -30,7 +30,6 @@ public class SchemataServiceImpl implements ISchemataService{
         schemataView.setMsg("SUCCESS");
         return schemataView;
     }
-
     @Override
     public SchemataVo getOne(String schemaName) {
         return schemataMapper.getOne(schemaName);

@@ -6,6 +6,7 @@ import com.snowwolf.dtotool.mode.SchemataVo;
 import com.snowwolf.dtotool.service.IColumnService;
 import com.snowwolf.dtotool.service.ISchemataService;
 import com.snowwolf.dtotool.service.ITableService;
+import com.snowwolf.dtotool.tool.BeanUtil;
 import com.snowwolf.dtotool.view.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,5 +63,15 @@ public class SchemataController {
     @GetMapping("/findColum")
     public ColumView findColumByTB(TableReq tableReq){
         return columnService.findTableByTB(tableReq);
+    }
+
+    /**
+     * create
+     * @param tableReq
+     */
+    @GetMapping("/create")
+    public void createBean(TableReq tableReq){
+        //bean存放路径
+        BeanUtil.createBean(columnService.findTableByTB(tableReq),"","","I:\\mycode\\mongodbit\\src\\main\\java\\com\\wolf\\mongodbit\\entity\\mongodb\\");
     }
 }

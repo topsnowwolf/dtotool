@@ -16,3 +16,12 @@ mybatis:
     schemata: classpath:mybatis/mapper/schemata/*.xml
 logging:
   config: classpath:log/logging-config.xml
+default:
+  annotion:
+    entity: {Data}
+    table: {Table,Entity,Data}
+    colummn: {Id,Column}
+name:
+  rule:
+    entity: $Eo
+    url: main\java\

@@ -13,6 +13,9 @@ import java.io.Serializable;
  */
 @Data
 public class ColumnVo implements Serializable {
+    /**
+     *
+     */
     private String tableCatalog;
     private String tableSchema;
     private String tableName;
