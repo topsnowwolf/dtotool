@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * @versions：0.1.0
  */
 @Component
-@ConfigurationProperties(prefix = "default.annotion")
+@ConfigurationProperties(prefix = "default.annotation")
 @Data
 public class GetDefaultAnnotion {
     private String entity;

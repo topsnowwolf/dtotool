@@ -17,7 +17,7 @@ mybatis:
 logging:
   config: classpath:log/logging-config.xml
 default:
-  annotion:
+  annotation:
     entity: {Data}
     table: {Table,Entity,Data}
     colummn: {Id,Column}

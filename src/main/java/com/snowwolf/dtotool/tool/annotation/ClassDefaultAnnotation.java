@@ -1,4 +1,4 @@
-package com.snowwolf.dtotool.tool.annotion;
+package com.snowwolf.dtotool.tool.annotation;
 
 /**
  * @author: topsnowwolf

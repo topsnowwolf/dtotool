@@ -1,21 +1,20 @@
 package com.snowwolf.dtotool.controller;
 
 import com.snowwolf.dtotool.dto.TableReq;
-import com.snowwolf.dtotool.mapper.schemata.SchemataMapper;
-import com.snowwolf.dtotool.mode.SchemataVo;
 import com.snowwolf.dtotool.service.IColumnService;
 import com.snowwolf.dtotool.service.ISchemataService;
 import com.snowwolf.dtotool.service.ITableService;
 import com.snowwolf.dtotool.tool.BeanUtil;
 import com.snowwolf.dtotool.view.*;
+import com.snowwolf.dtotool.yml.GetAnnotationYml;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: topsnowwolf
@@ -34,6 +33,8 @@ public class SchemataController {
     private ITableService tableService;
     @Autowired
     private IColumnService columnService;
+    @Autowired
+    private GetAnnotationYml getAnnotationYml;
 
     /**
      * 查询所有的库
@@ -71,6 +72,9 @@ public class SchemataController {
      */
     @GetMapping("/create")
     public void createBean(TableReq tableReq){
+        //注解标签获取
+        Map<String, String> defaultMap = getAnnotationYml.getDefaultMap();
+        Map<String, String> customMap = getAnnotationYml.getCustomMap();
         //bean存放路径
         BeanUtil.createBean(columnService.findTableByTB(tableReq),"","","I:\\mycode\\mongodbit\\src\\main\\java\\com\\wolf\\mongodbit\\entity\\mongodb\\");
     }
