@@ -17,10 +17,13 @@ import java.util.Map;
 @Configuration
 @ConfigurationProperties(prefix = "tag",ignoreUnknownFields = false)
 @PropertySource(value ={"classpath:annotation/annotation.properties",
-        "classpath:annotation/custom_annotation.properties"},
+        "classpath:annotation/custom_entity.properties",
+        "classpath:annotation/custom_property.properties"},
         ignoreResourceNotFound = true)
 @Data
 public class GetAnnotationYml {
-    private Map<String,String> defaultMap;
-    private Map<String,String> customMap;
+    private Map<String,String> defaultEntityMap;
+    private Map<String,String> defaultPropertyMap;
+    private Map<String,String> customEntityMap;
+    private Map<String,String> customPropertyMap;
 }

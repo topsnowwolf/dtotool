@@ -73,8 +73,8 @@ public class SchemataController {
     @GetMapping("/create")
     public void createBean(TableReq tableReq){
         //注解标签获取
-        Map<String, String> defaultMap = getAnnotationYml.getDefaultMap();
-        Map<String, String> customMap = getAnnotationYml.getCustomMap();
+//        Map<String, String> defaultMap = getAnnotationYml.getDefaultMap();
+//        Map<String, String> customMap = getAnnotationYml.getCustomMap();
         //bean存放路径
         BeanUtil.createBean(columnService.findTableByTB(tableReq),"","","I:\\mycode\\mongodbit\\src\\main\\java\\com\\wolf\\mongodbit\\entity\\mongodb\\");
     }
