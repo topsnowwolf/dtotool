@@ -27,14 +27,15 @@ public class BeanUtil {
     private static final String DATA_SCALE = "DATA_SCALE";
     private static final String ISPK = "ISPK";
     private static final String COMMENTS = "COMMENTS";
-    public static void createBean(ColumView columView, String className, String packageName, String path){
-
+    public static void createBean(ViewInfo viewInfo){
+        ColumView columView = viewInfo.getColumView();
         StringBuffer result = new StringBuffer();
         StringBuffer getsetresult = new StringBuffer();
         try{
             List<Map> ls = new ArrayList<Map>();
-            String tableName = columView.getTableName();
+            String tableName = viewInfo.getColumView().getTableName();
             //设置创建实体类的类名，当没有传参数，根据yml配置规则来命名，$代表表名
+            String className = viewInfo.getClassName();
             if(StringUtils.isEmpty(className)){
                 String arr[] = tableName.split("_");
                 String tbName = "";
@@ -45,6 +46,8 @@ public class BeanUtil {
                 className = GetNameYml.getEntity().replace("$",tbName);
             }
             //设置实体类的包路径，当为空根据yml配置url命名来设置，当保存的路径包含"main\\java\\",设置包路径就是java后面的路径，没有包含，就是path。
+            String packageName = viewInfo.getPackageName();
+            String path = viewInfo.getPath();
             if(StringUtils.isEmpty(packageName)){
                 String url = GetNameYml.getUrl();
                 int index = path.indexOf(GetNameYml.getUrl());

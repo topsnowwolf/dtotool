@@ -13,8 +13,8 @@ import java.util.List;
  */
 @Data
 public class TagView {
-    private List<TagView> defualtEntityList;
-    private List<TagView> defualtColumnList;
-    private List<TagView> customEntityList;
-    private List<TagView> customColumnList;
+    private List<TagInfoView> defualtEntityList;
+    private List<TagInfoView> defualtColumnList;
+    private List<TagInfoView> customEntityList;
+    private List<TagInfoView> customColumnList;
 }
