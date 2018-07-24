@@ -1,6 +1,10 @@
 package com.snowwolf.dtotool.service.impl;
 
 import com.snowwolf.dtotool.service.IAllocationService;
+import com.snowwolf.dtotool.tool.BeanUtil;
+import com.snowwolf.dtotool.tool.TagInfo;
+import com.snowwolf.dtotool.tool.TagVo;
+import com.snowwolf.dtotool.tool.ViewInfo;
 import com.snowwolf.dtotool.view.tag.TagInfoView;
 import com.snowwolf.dtotool.view.tag.TagView;
 import com.snowwolf.dtotool.yml.GetAnnotationYml;
@@ -29,6 +33,53 @@ public class AllocationServiceImpl implements IAllocationService {
     private final String custPropertyMap = "3";
     @Resource
     private GetAnnotationYml getAnnotationYml;
+
+    @Override
+    public String createBean(ViewInfo viewInfo) {
+        Map<String,String> defaultEntityMap = getAnnotationYml.getDefaultEntityMap();
+        Map<String,String> defaultPropertyMap = getAnnotationYml.getDefaultPropertyMap();
+        Map<String,String> customEntityMap = getAnnotationYml.getCustomEntityMap();
+        Map<String,String> custPropertyMap = getAnnotationYml.getCustomPropertyMap();
+        TagVo tagVo = new TagVo();
+        List<TagInfo> entityTag = new ArrayList<>();
+        List<TagInfo> propertyTag = new ArrayList<>();
+        viewInfo.getTagVo().getEntityTag().forEach(tagInfo -> {
+            if(defaultEntityMap.get(tagInfo.getName()) != null){
+                tagInfo.setImportUrl(defaultEntityMap.get(tagInfo.getName()));
+                entityTag.add(tagInfo);
+            }
+            if(customEntityMap.get(tagInfo.getName()) != null){
+                tagInfo.setImportUrl(customEntityMap.get(tagInfo.getName()));
+                entityTag.add(tagInfo);
+            }
+        });
+        viewInfo.getTagVo().getPropertyTag().forEach(tagInfo -> {
+            if(defaultPropertyMap.get(tagInfo.getName()) != null){
+                tagInfo.setImportUrl(defaultPropertyMap.get(tagInfo.getName()));
+                propertyTag.add(tagInfo);
+            }
+            if(custPropertyMap.get(tagInfo.getName()) != null){
+                tagInfo.setImportUrl(custPropertyMap.get(tagInfo.getName()));
+                propertyTag.add(tagInfo);
+            }
+        });
+        tagVo.setEntityTag(entityTag);
+        tagVo.setPropertyTag(propertyTag);
+        viewInfo.setTagVo(tagVo);
+        return BeanUtil.createBean(viewInfo);
+    }
+
+    private List<TagInfo> setTagInfo(List<TagInfo> list, Map<String, String> map) {
+        if(map != null && !map.isEmpty()){
+            map.forEach((k,v)->{
+                TagInfo tagInfo = new TagInfo();
+                tagInfo.setName(k);
+                list.add(tagInfo);
+            });
+        }
+        return list;
+    }
+
     @Override
     public TagView findAll() {
         TagView tagView = new TagView();

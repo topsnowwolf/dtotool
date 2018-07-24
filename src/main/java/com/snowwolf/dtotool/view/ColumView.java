@@ -15,5 +15,6 @@ import java.util.List;
 public class ColumView {
     private String tableName;
     private String dbName;
+    private String tableDesc;
     private List<ColumInfoView> list;
 }

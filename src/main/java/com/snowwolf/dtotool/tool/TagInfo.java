@@ -11,5 +11,10 @@ import lombok.Data;
  */
 @Data
 public class TagInfo {
+    private String importUrl;
     private String name;
+    private Integer type;
+    private String organization;
+    private String status;
+    private Integer tagType;
 }

@@ -17,4 +17,5 @@ public class ViewInfo {
     private String packageName;
     private String path;
     private TagVo tagVo;
+    private DefaultTagVo defaultTagVo;
 }

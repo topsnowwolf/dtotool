@@ -3,6 +3,7 @@ package com.snowwolf.dtotool.tool;
 import com.snowwolf.dtotool.view.ColumView;
 import com.snowwolf.dtotool.yml.GetNameYml;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.BufferedWriter;
@@ -27,11 +28,15 @@ public class BeanUtil {
     private static final String DATA_SCALE = "DATA_SCALE";
     private static final String ISPK = "ISPK";
     private static final String COMMENTS = "COMMENTS";
-    public static void createBean(ViewInfo viewInfo){
+    public static String createBean(ViewInfo viewInfo){
         ColumView columView = viewInfo.getColumView();
         StringBuffer result = new StringBuffer();
+        StringBuffer entityHeader = new StringBuffer();
         StringBuffer getsetresult = new StringBuffer();
+        String fileName = "";
+        List<String> fale = new ArrayList<>();
         try{
+
             List<Map> ls = new ArrayList<Map>();
             String tableName = viewInfo.getColumView().getTableName();
             //设置创建实体类的类名，当没有传参数，根据yml配置规则来命名，$代表表名
@@ -45,6 +50,7 @@ public class BeanUtil {
                 String name = GetNameYml.getEntity();
                 className = GetNameYml.getEntity().replace("$",tbName);
             }
+            String entityName = className;
             //设置实体类的包路径，当为空根据yml配置url命名来设置，当保存的路径包含"main\\java\\",设置包路径就是java后面的路径，没有包含，就是path。
             String packageName = viewInfo.getPackageName();
             String path = viewInfo.getPath();
@@ -73,15 +79,40 @@ public class BeanUtil {
             });
             result.append("package ").append(packageName).append(";\n");
             //实体类引入的注解对应的包
-            result.append("import java.io.Serializable;\n");
-            result.append("import javax.persistence.Column;\n");
-            result.append("import javax.persistence.Entity;\n");
-            result.append("import javax.persistence.Id;\n");
-            result.append("import javax.persistence.Table;\n\n");
+
+            if(!CollectionUtils.isEmpty(viewInfo.getTagVo().getEntityTag())){
+                viewInfo.getTagVo().getEntityTag().forEach(tagInfo -> {
+                    result.append(tagInfo.getImportUrl()+";\n");
+                    if(tagInfo.getName().equals("Entity")){
+                        entityHeader.append("@Entity\n");
+                    }
+                    if(tagInfo.getName().equals("Table")){
+                        entityHeader.append("@Table(name=\"" + tableName + "\")\n");
+                    }
+                    //@ApiModel(value="ActivityEo",description = "活动基本信息")
+                    if(tagInfo.getName().equals("ApiModel")){
+                        entityHeader.append("@ApiModel(value=\"" + entityName + "\" , " +
+                                " description = \"" + viewInfo.getColumView().getTableDesc() + "\" )\n");
+                    }
+                    if(tagInfo.getName().equals("Data")){
+                        fale.add(tagInfo.getName());
+                    }
+                });
+            }
+            if(!CollectionUtils.isEmpty(viewInfo.getTagVo().getPropertyTag())){
+                viewInfo.getTagVo().getPropertyTag().forEach(tagInfo -> {
+                    result.append(tagInfo.getImportUrl()+";\n");
+                });
+            }
+//            result.append("import java.io.Serializable;\n");
+//            result.append("import javax.persistence.Column;\n");
+//            result.append("import javax.persistence.Entity;\n");
+//            result.append("import javax.persistence.Id;\n");
+//            result.append("import javax.persistence.Table;\n\n");
             //实体类引入的注解
-            result.append("@Entity\n")
-                    .append("@Table(name=\"" + tableName + "\")\n")
-                    .append("public class " + className + " implements Serializable{\n");
+//            result.append("@Entity\n")
+//                    .append("@Table(name=\"" + tableName + "\")\n")
+            result.append(entityHeader).append("public class " + className + " implements Serializable{\n");
 
             for(int i=0; i<ls.size(); i++){
                 Map map = ls.get(i);
@@ -128,16 +159,19 @@ public class BeanUtil {
                 result.append("\t @Column(name=\"" + columnName + "\")" + "\n")
                         .append("\t private  " + varType + "  " + varName + ";\n\n");
                 //当引入Data注解，get/ser方法不需要了。
-                getsetresult.append("\t public " + varType + " " + "get"+getsetName +"(){\n")
-                        .append("\t\t return "+varName+";"+"\n")
-                        .append("\t } \n\n")
-                        .append("\t public void " + "set"+getsetName +"("+varType + " " + varName +"){"+"\n")
-                        .append("\t\t"+"this."+varName+"="+varName+";"+"\n")
-                        .append("\t } \n\n");
+                if(CollectionUtils.isEmpty(fale)){
+                    getsetresult.append("\t public " + varType + " " + "get"+getsetName +"(){\n")
+                            .append("\t\t return "+varName+";"+"\n")
+                            .append("\t } \n\n")
+                            .append("\t public void " + "set"+getsetName +"("+varType + " " + varName +"){"+"\n")
+                            .append("\t\t"+"this."+varName+"="+varName+";"+"\n")
+                            .append("\t } \n\n");
+                }
             }
             result.append(getsetresult).append("}");
 
             File file = new File(path + className + ".java");
+            fileName = file.getName();
             BufferedWriter bw = new BufferedWriter(new FileWriter(file));
             bw.write(result.toString());
             bw.flush();
@@ -145,6 +179,7 @@ public class BeanUtil {
         }catch(Exception e){
             e.printStackTrace();
         }
+        return fileName;
     }
 }
 

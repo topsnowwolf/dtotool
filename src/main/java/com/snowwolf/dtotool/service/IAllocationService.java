@@ -1,5 +1,6 @@
 package com.snowwolf.dtotool.service;
 
+import com.snowwolf.dtotool.tool.ViewInfo;
 import com.snowwolf.dtotool.view.tag.TagView;
 
 /**
@@ -12,4 +13,5 @@ import com.snowwolf.dtotool.view.tag.TagView;
 public interface IAllocationService {
     TagView findAll();
     TagView findTag(String type);
+    String createBean(ViewInfo viewInfo);
 }
