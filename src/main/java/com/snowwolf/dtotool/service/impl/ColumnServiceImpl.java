@@ -2,10 +2,13 @@ package com.snowwolf.dtotool.service.impl;
 
 import com.snowwolf.dtotool.dto.TableReq;
 import com.snowwolf.dtotool.mapper.schemata.ColumnMapper;
+import com.snowwolf.dtotool.mapper.schemata.TableMapper;
 import com.snowwolf.dtotool.mode.ColumnVo;
+import com.snowwolf.dtotool.mode.TableVo;
 import com.snowwolf.dtotool.service.IColumnService;
 import com.snowwolf.dtotool.view.ColumInfoView;
 import com.snowwolf.dtotool.view.ColumView;
+import com.snowwolf.dtotool.view.TableInfoView;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -22,12 +25,16 @@ import java.util.List;
 @Service
 public class ColumnServiceImpl implements IColumnService {
     @Resource
+    private TableMapper tableMapper;
+    @Resource
     private ColumnMapper columnMapper;
     @Override
     public ColumView findTableByTB(TableReq tableReq) {
+        TableVo tableVo = tableMapper.findTableById(tableReq);
         ColumView columView = new ColumView();
         columView.setDbName(tableReq.getDbName());
-        columView.setTableName(tableReq.getTableName());
+        columView.setTableName(tableVo.getTableName());
+        columView.setTableDesc(tableVo.getTableComment());
         List<ColumInfoView> list = new ArrayList<>();
         columnMapper.findTableByTB(tableReq).forEach(columnVo -> {
             ColumInfoView columInfoView = new ColumInfoView();

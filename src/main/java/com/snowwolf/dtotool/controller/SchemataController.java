@@ -1,18 +1,19 @@
 package com.snowwolf.dtotool.controller;
 
 import com.snowwolf.dtotool.dto.TableReq;
+import com.snowwolf.dtotool.dto.TagReq;
+import com.snowwolf.dtotool.service.IAllocationService;
 import com.snowwolf.dtotool.service.IColumnService;
 import com.snowwolf.dtotool.service.ISchemataService;
 import com.snowwolf.dtotool.service.ITableService;
-import com.snowwolf.dtotool.tool.BeanUtil;
+import com.snowwolf.dtotool.tool.*;
 import com.snowwolf.dtotool.view.*;
 import com.snowwolf.dtotool.yml.GetAnnotationYml;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,8 @@ public class SchemataController {
     private IColumnService columnService;
     @Autowired
     private GetAnnotationYml getAnnotationYml;
-
+    @Autowired
+    private IAllocationService allocationService;
     /**
      * 查询所有的库
      * @return
@@ -68,14 +70,35 @@ public class SchemataController {
 
     /**
      * create
-     * @param tableReq
+     * @param tagReq
      */
-    @GetMapping("/create")
-    public void createBean(TableReq tableReq){
-        //注解标签获取
-//        Map<String, String> defaultMap = getAnnotationYml.getDefaultMap();
-//        Map<String, String> customMap = getAnnotationYml.getCustomMap();
-        //bean存放路径
-//        BeanUtil.createBean(columnService.findTableByTB(tableReq),"","","I:\\mycode\\mongodbit\\src\\main\\java\\com\\wolf\\mongodbit\\entity\\mongodb\\");
+    @PostMapping("/create")
+    public DataVo createBean(@RequestBody TagReq tagReq){
+        ViewInfo viewInfo = new ViewInfo();
+        ColumView columView = new ColumView();
+        columView.setDbName(tagReq.getDbName());
+        columView.setTableName(tagReq.getTableName());
+        viewInfo.setColumView(columView);
+        TagVo tagVo = new TagVo();
+        List<TagInfo> entityTag = new ArrayList<>();
+        tagReq.getEntityList().forEach(s -> {
+            TagInfo tagInfo = new TagInfo();
+            tagInfo.setName(s);
+            entityTag.add(tagInfo);
+        });
+        tagVo.setEntityTag(entityTag);
+        List<TagInfo> propertyTag = new ArrayList<>();
+        tagReq.getPropertyList().forEach(s -> {
+            TagInfo tagInfo = new TagInfo();
+            tagInfo.setName(s);
+            propertyTag.add(tagInfo);
+        });
+        tagVo.setPropertyTag(propertyTag);
+        viewInfo.setTagVo(tagVo);
+        viewInfo.setClassName(tagReq.getClassName());
+        viewInfo.setPackageName(tagReq.getPackageName());
+        viewInfo.setPath(tagReq.getPath());
+        String url = allocationService.createBean(viewInfo);
+        return new DataVo("0000","SUCCESS",url);
     }
 }

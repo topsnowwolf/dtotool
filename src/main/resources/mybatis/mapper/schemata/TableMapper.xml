@@ -19,4 +19,11 @@
 	   FROM TABLES
         WHERE TABLE_SCHEMA = #{dbName}
     </select>
+
+    <select id="findTableById" parameterType="com.snowwolf.dtotool.dto.TableReq" resultMap="BaseResultMap"  >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM TABLES
+        WHERE TABLE_SCHEMA = #{dbName} and TABLE_NAME = #{tableName}
+    </select>
 </mapper>

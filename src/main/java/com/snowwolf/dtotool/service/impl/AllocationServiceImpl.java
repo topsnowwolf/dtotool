@@ -1,10 +1,13 @@
 package com.snowwolf.dtotool.service.impl;
 
+import com.snowwolf.dtotool.dto.TableReq;
 import com.snowwolf.dtotool.service.IAllocationService;
+import com.snowwolf.dtotool.service.IColumnService;
 import com.snowwolf.dtotool.tool.BeanUtil;
 import com.snowwolf.dtotool.tool.TagInfo;
 import com.snowwolf.dtotool.tool.TagVo;
 import com.snowwolf.dtotool.tool.ViewInfo;
+import com.snowwolf.dtotool.view.ColumView;
 import com.snowwolf.dtotool.view.tag.TagInfoView;
 import com.snowwolf.dtotool.view.tag.TagView;
 import com.snowwolf.dtotool.yml.GetAnnotationYml;
@@ -33,9 +36,15 @@ public class AllocationServiceImpl implements IAllocationService {
     private final String custPropertyMap = "3";
     @Resource
     private GetAnnotationYml getAnnotationYml;
-
+    @Resource
+    private IColumnService columnService;
     @Override
     public String createBean(ViewInfo viewInfo) {
+        TableReq tableReq = new TableReq();
+        tableReq.setDbName(viewInfo.getColumView().getDbName());
+        tableReq.setTableName(viewInfo.getColumView().getTableName());
+        ColumView columView = columnService.findTableByTB(tableReq);
+        viewInfo.setColumView(columView);
         Map<String,String> defaultEntityMap = getAnnotationYml.getDefaultEntityMap();
         Map<String,String> defaultPropertyMap = getAnnotationYml.getDefaultPropertyMap();
         Map<String,String> customEntityMap = getAnnotationYml.getCustomEntityMap();
@@ -48,7 +57,7 @@ public class AllocationServiceImpl implements IAllocationService {
                 tagInfo.setImportUrl(defaultEntityMap.get(tagInfo.getName()));
                 entityTag.add(tagInfo);
             }
-            if(customEntityMap.get(tagInfo.getName()) != null){
+            if(customEntityMap != null && customEntityMap.get(tagInfo.getName()) != null){
                 tagInfo.setImportUrl(customEntityMap.get(tagInfo.getName()));
                 entityTag.add(tagInfo);
             }
@@ -58,7 +67,7 @@ public class AllocationServiceImpl implements IAllocationService {
                 tagInfo.setImportUrl(defaultPropertyMap.get(tagInfo.getName()));
                 propertyTag.add(tagInfo);
             }
-            if(custPropertyMap.get(tagInfo.getName()) != null){
+            if(custPropertyMap != null && custPropertyMap.get(tagInfo.getName()) != null){
                 tagInfo.setImportUrl(custPropertyMap.get(tagInfo.getName()));
                 propertyTag.add(tagInfo);
             }

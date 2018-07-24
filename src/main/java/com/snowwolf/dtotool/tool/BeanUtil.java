@@ -28,6 +28,7 @@ public class BeanUtil {
     private static final String DATA_SCALE = "DATA_SCALE";
     private static final String ISPK = "ISPK";
     private static final String COMMENTS = "COMMENTS";
+    private static final String ABLENULL = "NO";
     public static String createBean(ViewInfo viewInfo){
         ColumView columView = viewInfo.getColumView();
         StringBuffer result = new StringBuffer();
@@ -35,6 +36,7 @@ public class BeanUtil {
         StringBuffer getsetresult = new StringBuffer();
         String fileName = "";
         List<String> fale = new ArrayList<>();
+        Map<String,String> propertyMap = new HashMap<>();
         try{
 
             List<Map> ls = new ArrayList<Map>();
@@ -69,6 +71,7 @@ public class BeanUtil {
                 map.put(BeanUtil.COLUMN_NAME, columInfoView.getColumnName());
                 map.put(BeanUtil.DATA_TYPE, columInfoView.getDataType());
                 map.put(BeanUtil.DATA_SCALE, columInfoView.getMaxCharver());
+                map.put(BeanUtil.ABLENULL, columInfoView.getAbleNull());
                 if(!StringUtils.isEmpty(columInfoView.getColumnKey())){
                     map.put(BeanUtil.ISPK, columInfoView.getColumnKey());
                 }
@@ -102,6 +105,7 @@ public class BeanUtil {
             if(!CollectionUtils.isEmpty(viewInfo.getTagVo().getPropertyTag())){
                 viewInfo.getTagVo().getPropertyTag().forEach(tagInfo -> {
                     result.append(tagInfo.getImportUrl()+";\n");
+                    propertyMap.put(tagInfo.getName(),tagInfo.getImportUrl());
                 });
             }
 //            result.append("import java.io.Serializable;\n");
@@ -155,9 +159,19 @@ public class BeanUtil {
                 if(isPK){
                     result.append("\t @Id\n");
                 }
-                //字段引入的注解
-                result.append("\t @Column(name=\"" + columnName + "\")" + "\n")
-                        .append("\t private  " + varType + "  " + varName + ";\n\n");
+                if(propertyMap.get("NotNull") != null){
+                    if(map.get("ABLENULL") != null && "NO".equals(map.get("ABLENULL"))){
+                        result.append("\t @NotNull\n");
+                    }
+                }
+                if(propertyMap.get("ApiModelProperty") != null){
+                    result.append("\t @ApiModelProperty(name=\"" + varName + "\",value =\""+map.get(COMMENTS)+"\")" + "\n");
+                }
+                if(propertyMap.get("Column") != null){
+                    //字段引入的注解
+                    result.append("\t @Column(name=\"" + columnName + "\")" + "\n");
+                }
+                result.append("\t private  " + varType + "  " + varName + ";\n\n");
                 //当引入Data注解，get/ser方法不需要了。
                 if(CollectionUtils.isEmpty(fale)){
                     getsetresult.append("\t public " + varType + " " + "get"+getsetName +"(){\n")

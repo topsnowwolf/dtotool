@@ -2,6 +2,8 @@ package com.snowwolf.dtotool.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author: topsnowwolf
  * @description:

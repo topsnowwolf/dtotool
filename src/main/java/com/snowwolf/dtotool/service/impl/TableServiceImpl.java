@@ -1,5 +1,6 @@
 package com.snowwolf.dtotool.service.impl;
 
+import com.snowwolf.dtotool.dto.TableReq;
 import com.snowwolf.dtotool.mapper.schemata.TableMapper;
 import com.snowwolf.dtotool.mode.TableVo;
 import com.snowwolf.dtotool.service.ITableService;
@@ -35,5 +36,14 @@ public class TableServiceImpl implements ITableService {
         });
         tableView.setList(list);
         return tableView;
+    }
+
+    @Override
+    public TableInfoView findTableById(TableReq tableReq) {
+        TableVo tableVo = tableMapper.findTableById(tableReq);
+        TableInfoView tableInfoView = new TableInfoView();
+        tableInfoView.setTableDesc(tableVo.getTableComment());
+        tableInfoView.setTableName(tableVo.getTableName());
+        return tableInfoView;
     }
 }
