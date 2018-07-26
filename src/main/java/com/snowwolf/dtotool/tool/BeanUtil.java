@@ -133,7 +133,7 @@ public class BeanUtil {
                 }
                 String dataType = map.get(BeanUtil.DATA_TYPE).toString();
                 Boolean isPK = false;
-                if(map.get(BeanUtil.ISPK).equals("PRI")){
+                if("PRI".equals(map.get(BeanUtil.ISPK))){
                     isPK = true;
                 }
                 String varType = null;
