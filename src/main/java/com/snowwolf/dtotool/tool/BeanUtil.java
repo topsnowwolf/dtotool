@@ -127,16 +127,17 @@ public class BeanUtil {
                     varName += arr[j].replaceFirst(arr[j].substring(0, 1),arr[j].substring(0, 1).toUpperCase());
                 }
                 String getsetName=varName.replaceFirst(varName.substring(0, 1),varName.substring(0, 1).toUpperCase());
-                String comments = map.get(BeanUtil.COMMENTS).toString();
-                if(comments==null || comments.equals("")) {
-                    comments = "无";
+                String comments = "";
+                if(map.get(BeanUtil.COMMENTS) != null){
+                    comments = map.get(BeanUtil.COMMENTS).toString();
                 }
                 String dataType = map.get(BeanUtil.DATA_TYPE).toString();
                 Boolean isPK = false;
-                if(!StringUtils.isEmpty(map.get(BeanUtil.ISPK))){
+                if(map.get(BeanUtil.ISPK).equals("PRI")){
                     isPK = true;
                 }
                 String varType = null;
+                dataType = dataType.toUpperCase();
                 if(dataType.equals("DATE")){
                     varType = "Date";
                 }else if(dataType.equals("DOUBLE")){

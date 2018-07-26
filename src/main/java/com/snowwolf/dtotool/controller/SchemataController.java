@@ -44,6 +44,7 @@ public class SchemataController {
      */
     @GetMapping("/findAllDB")
     public SchemataView findAll(){
+        log.info("come in SchemataView");
         return schemataService.getAll();
     }
 
@@ -54,7 +55,7 @@ public class SchemataController {
      */
     @GetMapping("/findTable")
     public TableView findTableByDB(String dbName){
-        log.info("----");
+        log.info("come in findTableByDB");
         return tableService.findTableByDB(dbName);
     }
 
@@ -65,6 +66,7 @@ public class SchemataController {
      */
     @GetMapping("/findColum")
     public ColumView findColumByTB(TableReq tableReq){
+        log.info("come in findColumByTB");
         return columnService.findTableByTB(tableReq);
     }
 
@@ -74,6 +76,7 @@ public class SchemataController {
      */
     @PostMapping("/create")
     public DataVo createBean(@RequestBody TagReq tagReq){
+        log.info("come in createBean");
         ViewInfo viewInfo = new ViewInfo();
         ColumView columView = new ColumView();
         columView.setDbName(tagReq.getDbName());
