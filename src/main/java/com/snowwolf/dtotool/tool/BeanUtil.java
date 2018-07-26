@@ -60,9 +60,10 @@ public class BeanUtil {
                 String url = GetNameYml.getUrl();
                 int index = path.indexOf(GetNameYml.getUrl());
                 if(index<0){
+                    packageName = path.substring(path.indexOf(url)+10,path.length()).replace("\\",".");
+                }else{
                     packageName = path.replace("\\",".");
-                }else {
-                    packageName = path.substring(path.indexOf("main\\java\\")+10,path.length()-1).replace("\\",".");
+                    packageName = packageName.substring(packageName.indexOf(":.")+2,packageName.length());
                 }
             }
             columView.getList().forEach(columInfoView -> {
