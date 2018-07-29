@@ -3,6 +3,8 @@ package com.snowwolf.dtotool.controller;
 import com.snowwolf.dtotool.service.IAllocationService;
 import com.snowwolf.dtotool.view.tag.TagView;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/tag")
 public class AllocationController {
+    private final static Logger logger = LoggerFactory.getLogger(AllocationController.class);
 
     @Autowired
     private IAllocationService allocationService;

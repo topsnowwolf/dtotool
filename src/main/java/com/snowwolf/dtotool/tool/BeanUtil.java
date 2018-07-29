@@ -1,7 +1,9 @@
 package com.snowwolf.dtotool.tool;
 
+import com.snowwolf.dtotool.mode.ParamVo;
 import com.snowwolf.dtotool.view.ColumView;
 import com.snowwolf.dtotool.yml.GetNameYml;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -21,6 +23,7 @@ import java.util.Map;
  * @modified by:
  * @versions：0.1.0
  */
+@Slf4j
 public class BeanUtil {
     private static final String TABLE_NAME = "TABLE_NAME";
     private static final String COLUMN_NAME = "COLUMN_NAME";
@@ -35,6 +38,7 @@ public class BeanUtil {
         StringBuffer entityHeader = new StringBuffer();
         StringBuffer getsetresult = new StringBuffer();
         String fileName = "";
+
         List<String> fale = new ArrayList<>();
         Map<String,String> propertyMap = new HashMap<>();
         try{
@@ -196,6 +200,92 @@ public class BeanUtil {
             e.printStackTrace();
         }
         return fileName;
+    }
+
+    /**
+     * 创建mock接口请求参数对应的bean
+     * @param paramsInfo
+     * @return
+     */
+    public static String createBeanForMockReqParams(ParamsInfo paramsInfo){
+        String path = paramsInfo.getPath();
+        String className = paramsInfo.getClassName();
+        String packageName = paramsInfo.getPackageName();
+        String fileName = "";
+        StringBuffer entityHeader = new StringBuffer();
+        StringBuffer getSetBf = new StringBuffer();
+        StringBuffer result = new StringBuffer();
+        try{
+            //设置创建实体类的类名，当没有传参数，根据yml配置规则来命名，$代表表名
+            String entityName = className;
+            //设置实体类的包路径，当为空根据yml配置url命名来设置，当保存的路径包含"main\\java\\",设置包路径就是java后面的路径，没有包含，就是path。
+            if(StringUtils.isEmpty(packageName)){
+                String url = GetNameYml.getUrl();
+                int index = path.indexOf(GetNameYml.getUrl());
+                if(index<0){
+                    packageName = path.substring(path.indexOf(url)+10,path.length()).replace("\\",".");
+                }else{
+                    packageName = path.replace("\\",".");
+                    packageName = packageName.substring(packageName.indexOf(":.")+2,packageName.length());
+                }
+            }
+            entityHeader.append("public class " + className + " implements Serializable{\n");
+            paramsInfo.getList().forEach(paramVo -> {
+                String name = paramVo.getName();
+                String type = paramVo.getType();
+                String desc = paramVo.getDesc();
+                boolean notNull = paramVo.isNotNull();
+                String getsetName=name.replaceFirst(name.substring(0, 1),name.substring(0, 1).toUpperCase());
+                String varType = null;
+                type = type.toUpperCase();
+                if(type.equals("DATE")){
+                    varType = "Date";
+                }else if(type.equals("DOUBLE")){
+                    varType = "Double";
+                }else if(type.equals("TINYINT")|| type.equals("INT")){
+                    varType = "Integer";
+                }else if(type.equals("BIGINT")){
+                    varType = "Long";
+                }else if(type.equals("FLOAT")){
+                    varType = "Float";
+                }else{
+                    varType = "String";
+                }
+                if(!StringUtils.isEmpty(desc)){
+                    result.append("\t /**"+"\n");
+                    result.append("\t  * "+ desc+"\n");
+                    result.append("\t  */ \n");
+                }
+                if(notNull){
+                    result.append("\t @NotNull\n");
+                }
+                result.append("\t private  " + varType + "  " + name + ";\n\n");
+
+                getSetBf.append("\t public " + varType + " " + "get"+getsetName +"(){\n")
+                        .append("\t\t return "+name+";"+"\n")
+                        .append("\t } \n\n")
+                        .append("\t public void " + "set"+getsetName +"("+varType + " " + name +"){"+"\n")
+                        .append("\t\t"+"this."+name+"="+name+";"+"\n")
+                        .append("\t } \n\n");
+            });
+
+            entityHeader.append(result).append(getSetBf).append("}");
+            File file = new File(path + className + ".java");
+            fileName = file.getName();
+            file.getPath();
+            file.getCanonicalPath();
+            BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+            bw.write(entityHeader.toString());
+            bw.flush();
+            bw.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return fileName;
+    }
+
+    public static String createBeanForMockeRes(){
+        return null;
     }
 }
 

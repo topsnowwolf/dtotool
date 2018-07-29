@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.snowwolf.dtotool.mapper.mock.MockMapper" >
+    <resultMap id="BaseResultMap" type="com.snowwolf.dtotool.mode.MockVo" >
+        <result column="id" property="id" jdbcType="INTEGER" />
+        <result column="project_id" property="projectId" jdbcType="INTEGER" />
+        <result column="group_id" property="groupId" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="request_url" property="requestUrl" jdbcType="VARCHAR" />
+        <result column="request_method" property="requestMethod" jdbcType="VARCHAR" />
+        <result column="request_headers" property="requestHeaders" jdbcType="VARCHAR" />
+        <result column="query_params" property="quereyParams" jdbcType="VARCHAR" />
+        <result column="success_resp_type" property="successType" jdbcType="VARCHAR" />
+        <result column="success_resp_example" property="successExample" jdbcType="VARCHAR" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <sql id="Base_Column_List" >
+        id, project_id, group_id,status,name,request_url,request_method,request_headers,
+        query_params,success_resp_type,success_resp_example,remark
+    </sql>
+
+    <select id="findMokcs" parameterType="com.snowwolf.dtotool.dto.MockDto" resultMap="BaseResultMap"  >
+       SELECT 
+       <include refid="Base_Column_List" />
+	   FROM xxl_api_document
+        WHERE 1=1
+        <if test="name!=null and name!=''">
+            and name like concat('%',#{name},'%')
+        </if>
+        <if test="url!=null and url!=''">
+            and request_url like concat('%',#{url},'%')
+        </if>
+    </select>
+
+    <select id="findOne" parameterType="com.snowwolf.dtotool.dto.MockDto" resultMap="BaseResultMap" >
+        SELECT 
+       <include refid="Base_Column_List" />
+	   FROM xxl_api_document
+	   WHERE 1=1
+        <if test=" id!=null and id!=''">
+            and id = #{id}
+         </if>
+        <if test="name!=null and name!=''">
+            and name = #{name}
+        </if>
+        <if test="url!=null and url!=''">
+            and request_url = #{url}
+        </if>
+    </select>
+</mapper>
