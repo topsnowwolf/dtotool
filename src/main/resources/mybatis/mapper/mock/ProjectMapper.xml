@@ -2,11 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.snowwolf.dtotool.mapper.mock.ProjectMapper" >
     <resultMap id="BaseResultMap" type="com.snowwolf.dtotool.mode.ProjectVo" >
-        <result column="project_id" property="projectId" jdbcType="INTEGER" />
-        <result column="project_name" property="projectName" jdbcType="VARCHAR" />
+        <result column="id" property="projectId" jdbcType="INTEGER" />
+        <result column="name" property="projectName" jdbcType="VARCHAR" />
     </resultMap>
 
     <select id="findMokcByPro" resultMap="BaseResultMap" >
-        select project_id,project_name from xxl_api_document group by project_id
+        select id,name from xxl_api_project group by id
     </select>
 </mapper>
