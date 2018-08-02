@@ -52,6 +52,7 @@ public class MockToBeanController {
     }
     @PostMapping("/increate")
     public DataVo createBean(@RequestBody  MockReqDto mockReqDto){
+        log.info("mockReqDto={}",mockReqDto.toString());
         MockDto mockDto = new MockDto();
         BeanUtils.copyProperties(mockReqDto,mockDto);
         String params = mockService.getQueryParams(mockDto);
