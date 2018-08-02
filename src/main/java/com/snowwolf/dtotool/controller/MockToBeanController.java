@@ -13,9 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -52,8 +50,8 @@ public class MockToBeanController {
         BeanUtils.copyProperties(mockReqDto,mockDto);
         return new DataVo("0000","SUCCESS",mockService.findOne(mockDto));
     }
-    @GetMapping("/increate")
-    public DataVo createBean(MockReqDto mockReqDto){
+    @PostMapping("/increate")
+    public DataVo createBean(@RequestBody  MockReqDto mockReqDto){
         MockDto mockDto = new MockDto();
         BeanUtils.copyProperties(mockReqDto,mockDto);
         String params = mockService.getQueryParams(mockDto);
@@ -66,8 +64,8 @@ public class MockToBeanController {
         return new DataVo("0000","SUCCESS",url);
     }
 
-    @GetMapping("/outcreate")
-    public DataVo createBeanOut(MockReqDto mockReqDto){
+    @PostMapping("/outcreate")
+    public DataVo createBeanOut(@RequestBody MockReqDto mockReqDto){
         MockDto mockDto = new MockDto();
         BeanUtils.copyProperties(mockReqDto,mockDto);
         String respont = mockService.getRespont(mockDto);
