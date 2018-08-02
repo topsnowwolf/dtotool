@@ -270,7 +270,7 @@ public class BeanUtil {
             });
 
             entityHeader.append(result).append(getSetBf).append("}");
-            File file = new File(path + className + ".java");
+            File file = new File(path+"\\" + className + ".java");
             fileName = file.getName();
             file.getPath();
             file.getCanonicalPath();
