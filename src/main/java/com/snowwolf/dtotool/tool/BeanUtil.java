@@ -1,7 +1,9 @@
 package com.snowwolf.dtotool.tool;
 
 import com.snowwolf.dtotool.mode.ParamVo;
+import com.snowwolf.dtotool.view.ColumInfoView;
 import com.snowwolf.dtotool.view.ColumView;
+import com.snowwolf.dtotool.view.JsonView;
 import com.snowwolf.dtotool.yml.GetNameYml;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +13,8 @@ import org.springframework.util.StringUtils;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author: topsnowwolf
@@ -287,5 +287,40 @@ public class BeanUtil {
     public static String createBeanForMockeRes(){
         return null;
     }
+
+    public static List<JsonView> tableToJson(List<ColumInfoView> columInfoViews, String type){
+        List<JsonView> list = new ArrayList<>();
+        columInfoViews.forEach(columInfoView -> {
+            JsonView jsonView = new JsonView();
+            if(type.equals("1")){
+                jsonView.setDesc(columInfoView.getColumnComment());
+            }
+            String arr[] = columInfoView.getColumnName().split("_");
+            String columnName = arr[0];
+            for(int j = 1;j <arr.length;j++){
+                columnName += arr[j].replaceFirst(arr[j].substring(0, 1),arr[j].substring(0, 1).toUpperCase());
+            }
+            jsonView.setName(columnName);
+            String dataType = columInfoView.getDataType().toUpperCase();
+            String value = "";
+            if(dataType.equals("DATETIME")){
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                value = formatter.format(new Date());
+            }else if(dataType.equals("DOUBLE")||dataType.equals("FLOAT")){
+                value = "3.01";
+            }else if(dataType.equals("TINYINT")||dataType.equals("SMALLINT")||
+                    dataType.equals("MEDIUMINT")|| dataType.equals("INT")|| dataType.equals("INTEGER")){
+                value = "201";
+            }else if(dataType.equals("BIGINT")){
+                value = "361222";
+            }else{
+                value = "测试值";
+            }
+            jsonView.setValue(value);
+            list.add(jsonView);
+        });
+        return list;
+    }
+
 }
 
