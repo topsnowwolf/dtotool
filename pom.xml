@@ -57,6 +57,12 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!--aop 面向切面引入 start-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+		<!--aop 面向切面引入 end-->
 		<!--lombok自动生成实体类get/set方法 start-->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -66,6 +72,11 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.32</version>
 		</dependency>
 	</dependencies>
 
