@@ -13,6 +13,7 @@ public class SnowwolfApplication extends SpringBootServletInitializer {
 	}
 
 	public static void main(String[] args) {
+		System.setProperty("sun.jnu.encoding","UTF-8");
 		SpringApplication.run(SnowwolfApplication.class, args);
 	}
 }

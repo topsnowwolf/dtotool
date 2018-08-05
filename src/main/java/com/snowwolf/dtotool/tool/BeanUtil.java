@@ -1,18 +1,14 @@
 package com.snowwolf.dtotool.tool;
 
-import com.snowwolf.dtotool.mode.ParamVo;
 import com.snowwolf.dtotool.view.ColumInfoView;
 import com.snowwolf.dtotool.view.ColumView;
 import com.snowwolf.dtotool.view.JsonView;
-import com.snowwolf.dtotool.yml.GetNameYml;
+import com.snowwolf.dtotool.yml.rule.GetRule;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -32,17 +28,30 @@ public class BeanUtil {
     private static final String ISPK = "ISPK";
     private static final String COMMENTS = "COMMENTS";
     private static final String ABLENULL = "NO";
+
+    /**
+     * 根据表转化为bean
+     * @param viewInfo
+     * @return
+     */
     public static String createBean(ViewInfo viewInfo){
+        System.setProperty("sun.jnu.encoding","utf-8");
         ColumView columView = viewInfo.getColumView();
         StringBuffer result = new StringBuffer();
         StringBuffer entityHeader = new StringBuffer();
         StringBuffer getsetresult = new StringBuffer();
+        StringBuffer estendResult = new StringBuffer();
+        StringBuffer implResult = new StringBuffer();
         String fileName = "";
 
         List<String> fale = new ArrayList<>();
         Map<String,String> propertyMap = new HashMap<>();
         try{
-
+            List<String> exclusiveColums = GetRule.exclusiveProperty;
+            Map<String,String> exclusiveMap = new HashMap<>();
+            if(!CollectionUtils.isEmpty(exclusiveColums)){
+                exclusiveColums.forEach(s -> {exclusiveMap.put(s.toUpperCase(),s);});
+            }
             List<Map> ls = new ArrayList<Map>();
             String tableName = viewInfo.getColumView().getTableName();
             //设置创建实体类的类名，当没有传参数，根据yml配置规则来命名，$代表表名
@@ -53,16 +62,19 @@ public class BeanUtil {
                 for(int j = 0;j <arr.length;j++){
                     tbName += arr[j].replaceFirst(arr[j].substring(0, 1),arr[j].substring(0, 1).toUpperCase());
                 }
-                String name = GetNameYml.getEntity();
-                className = GetNameYml.getEntity().replace("$",tbName);
+//                String name = GetNameYml.getEntity();
+                String name = GetRule.customEntityName;
+//                className = GetNameYml.getEntity().replace("$",tbName);
+                className = GetRule.customEntityName.replace("$",tbName);
             }
             String entityName = className;
             //设置实体类的包路径，当为空根据yml配置url命名来设置，当保存的路径包含"main\\java\\",设置包路径就是java后面的路径，没有包含，就是path。
             String packageName = viewInfo.getPackageName();
             String path = viewInfo.getPath();
             if(StringUtils.isEmpty(packageName)){
-                String url = GetNameYml.getUrl();
-                int index = path.indexOf(GetNameYml.getUrl());
+//                String url = GetNameYml.getUrl();
+                String url = GetRule.customEntityImport;
+                int index = path.indexOf(url);
                 if(index<0){
                     packageName = path.substring(path.indexOf(url)+10,path.length()).replace("\\",".");
                 }else{
@@ -71,25 +83,28 @@ public class BeanUtil {
                 }
             }
             columView.getList().forEach(columInfoView -> {
-                Map map = new HashMap<String,Object>();
-                map.put(BeanUtil.TABLE_NAME, tableName);
-                map.put(BeanUtil.COLUMN_NAME, columInfoView.getColumnName());
-                map.put(BeanUtil.DATA_TYPE, columInfoView.getDataType());
-                map.put(BeanUtil.DATA_SCALE, columInfoView.getMaxCharver());
-                map.put(BeanUtil.ABLENULL, columInfoView.getAbleNull());
-                if(!StringUtils.isEmpty(columInfoView.getColumnKey())){
-                    map.put(BeanUtil.ISPK, columInfoView.getColumnKey());
+                if(exclusiveMap.get(columInfoView.getColumnName().toUpperCase())==null){
+                    Map map = new HashMap<String,Object>();
+                    map.put(BeanUtil.TABLE_NAME, tableName);
+                    map.put(BeanUtil.COLUMN_NAME, columInfoView.getColumnName());
+                    map.put(BeanUtil.DATA_TYPE, columInfoView.getDataType());
+                    map.put(BeanUtil.DATA_SCALE, columInfoView.getMaxCharver());
+                    map.put(BeanUtil.ABLENULL, columInfoView.getAbleNull());
+                    if(!StringUtils.isEmpty(columInfoView.getColumnKey())){
+                        map.put(BeanUtil.ISPK, columInfoView.getColumnKey());
+                    }
+                    if(!StringUtils.isEmpty(columInfoView.getColumnComment())){
+                        map.put(BeanUtil.COMMENTS, columInfoView.getColumnComment());
+                    }
+                    ls.add(map);
                 }
-                if(!StringUtils.isEmpty(columInfoView.getColumnComment())){
-                    map.put(BeanUtil.COMMENTS, columInfoView.getColumnComment());
-                }
-                ls.add(map);
             });
             result.append("package ").append(packageName).append(";\n");
             //实体类引入的注解对应的包
 
             if(!CollectionUtils.isEmpty(viewInfo.getTagVo().getEntityTag())){
                 viewInfo.getTagVo().getEntityTag().forEach(tagInfo -> {
+                    //选择的bean注解引入配置import
                     result.append(tagInfo.getImportUrl()+";\n");
                     if(tagInfo.getName().equals("Entity")){
                         entityHeader.append("@Entity\n");
@@ -97,31 +112,47 @@ public class BeanUtil {
                     if(tagInfo.getName().equals("Table")){
                         entityHeader.append("@Table(name=\"" + tableName + "\")\n");
                     }
-                    //@ApiModel(value="ActivityEo",description = "活动基本信息")
                     if(tagInfo.getName().equals("ApiModel")){
                         entityHeader.append("@ApiModel(value=\"" + entityName + "\" , " +
                                 " description = \"" + viewInfo.getColumView().getTableDesc() + "\" )\n");
                     }
                     if(tagInfo.getName().equals("Data")){
+                        entityHeader.append("@Data\n");
                         fale.add(tagInfo.getName());
                     }
                 });
             }
+            //选择的bean属性注解引入配置import
             if(!CollectionUtils.isEmpty(viewInfo.getTagVo().getPropertyTag())){
                 viewInfo.getTagVo().getPropertyTag().forEach(tagInfo -> {
                     result.append(tagInfo.getImportUrl()+";\n");
                     propertyMap.put(tagInfo.getName(),tagInfo.getImportUrl());
                 });
             }
-//            result.append("import java.io.Serializable;\n");
-//            result.append("import javax.persistence.Column;\n");
-//            result.append("import javax.persistence.Entity;\n");
-//            result.append("import javax.persistence.Id;\n");
-//            result.append("import javax.persistence.Table;\n\n");
-            //实体类引入的注解
-//            result.append("@Entity\n")
-//                    .append("@Table(name=\"" + tableName + "\")\n")
-            result.append(entityHeader).append("public class " + className + " implements Serializable{\n");
+
+            //继承，实现控制
+            Map<String,String> extendsMap = GetRule.customEntityExtends;
+            Map<String,String> entityImplMap = GetRule.customEntityImpl;
+            if(extendsMap != null){
+                if(extendsMap.size()>1){
+                    new RuntimeException("bean继承的类只能配置一个，请把namingRule.properties配置中的配置修改一下！");
+                }
+                extendsMap.forEach((s, s2) -> {
+                    result.append(s2+";\n");
+                    estendResult.append(" extends "+s);
+                });
+            }
+            if(entityImplMap != null){
+                estendResult.append(" implements ");
+                entityImplMap.forEach((s, s2) -> {
+                    result.append(s2+";\n");
+                    estendResult.append(s+" ,");
+                });
+                implResult = new StringBuffer(estendResult.substring(0,estendResult.length()-1));
+            }else{
+                implResult = estendResult;
+            }
+            result.append("\n"+entityHeader).append("public class " + className+implResult+"{\n");
 
             for(int i=0; i<ls.size(); i++){
                 Map map = ls.get(i);
@@ -162,7 +193,7 @@ public class BeanUtil {
                     result.append("\t  * "+ comments+"\n");
                     result.append("\t  */ \n");
                 }
-                if(isPK){
+                if(isPK&&propertyMap.get("Id") != null){
                     result.append("\t @Id\n");
                 }
                 if(propertyMap.get("NotNull") != null){
@@ -189,10 +220,14 @@ public class BeanUtil {
                 }
             }
             result.append(getsetresult).append("}");
-
+            //判断保存的路径最后一个字符是否是/，不是加上
+            if(!(path.substring(path.length()-1,path.length())).equals("\\")){
+                path += "\\";
+            }
             File file = new File(path + className + ".java");
             fileName = file.getName();
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+            OutputStreamWriter outStream = new OutputStreamWriter(new FileOutputStream(file),"UTF-8");
+            BufferedWriter bw = new BufferedWriter(outStream);
             bw.write(result.toString());
             bw.flush();
             bw.close();
@@ -220,8 +255,9 @@ public class BeanUtil {
             String entityName = className;
             //设置实体类的包路径，当为空根据yml配置url命名来设置，当保存的路径包含"main\\java\\",设置包路径就是java后面的路径，没有包含，就是path。
             if(StringUtils.isEmpty(packageName)){
-                String url = GetNameYml.getUrl();
-                int index = path.indexOf(GetNameYml.getUrl());
+//                String url = GetNameYml.getUrl();
+                String url = GetRule.customEntityImport;
+                int index = path.indexOf(url);
                 if(index<0){
                     packageName = path.substring(path.indexOf(url)+10,path.length()).replace("\\",".");
                 }else{

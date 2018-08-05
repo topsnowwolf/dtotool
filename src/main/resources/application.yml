@@ -2,28 +2,27 @@ spring:
   datasource:
     schemata:
       driverClassName: com.mysql.jdbc.Driver
-      username: yunxi
-      password: yunxi
-      url: jdbc:mysql://192.168.33.11/information_schema?characterEncoding=utf-8&useSSL=false
+      username: root
+      password: 123456
+      url: jdbc:mysql://localhost/information_schema?characterEncoding=utf-8&useSSL=false
     mock:
       driverClassName: com.mysql.jdbc.Driver
-      username: yunxi
-      password: yunxi
-      url: jdbc:mysql://192.168.33.11/yxpay_ci?characterEncoding=utf-8&useSSL=false
+      username: root
+      password: 123456
+      url: jdbc:mysql://localhost/yxpay_ci?characterEncoding=utf-8&useSSL=false
+  http:
+    encoding:
+      charset: utf-8
+      force: true
+      enabled: true
+
 mybatis:
   mapper:
     mock: classpath:mybatis/mapper/mock/*.xml
     schemata: classpath:mybatis/mapper/schemata/*.xml
 logging:
   config: classpath:log/logging-config.xml
-default:
-  annotation:
-    entity: {Data}
-    table: {Table,Entity,Data}
-    colummn: {Id,Column}
-name:
-  rule:
-    entity: $Eo
-    url: main\java\
 server:
   port: 8091
+  tomcat:
+    uri-encoding: UTF-8

@@ -1,7 +1,9 @@
 package com.snowwolf.dtotool.dto;
 
+import com.snowwolf.dtotool.tool.TagVo;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -11,7 +13,7 @@ import java.util.List;
  * @since 0.1.0
  */
 @Data
-public class JsonReqDto {
+public class JsonReqDto{
     private String dbName;
     private String tableName;
     private List<String> colums;

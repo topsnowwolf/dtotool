@@ -1,21 +1,16 @@
 package com.snowwolf.dtotool.controller;
 
+import com.snowwolf.dtotool.business.ISchemataApi;
 import com.snowwolf.dtotool.dto.TableReq;
 import com.snowwolf.dtotool.dto.TagReq;
-import com.snowwolf.dtotool.service.IAllocationService;
-import com.snowwolf.dtotool.service.IColumnService;
-import com.snowwolf.dtotool.service.ISchemataService;
-import com.snowwolf.dtotool.service.ITableService;
-import com.snowwolf.dtotool.tool.*;
-import com.snowwolf.dtotool.view.*;
-import com.snowwolf.dtotool.yml.GetAnnotationYml;
+import com.snowwolf.dtotool.view.ColumView;
+import com.snowwolf.dtotool.view.DataVo;
+import com.snowwolf.dtotool.view.SchemataView;
+import com.snowwolf.dtotool.view.TableView;
+import com.snowwolf.dtotool.view.tag.AnnotationView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author: topsnowwolf
@@ -29,15 +24,8 @@ import java.util.Map;
 @RequestMapping("/db")
 public class SchemataController {
     @Autowired
-    private ISchemataService schemataService;
-    @Autowired
-    private ITableService tableService;
-    @Autowired
-    private IColumnService columnService;
-    @Autowired
-    private GetAnnotationYml getAnnotationYml;
-    @Autowired
-    private IAllocationService allocationService;
+    private ISchemataApi schemataApi;
+
     /**
      * 查询所有的库
      * @return
@@ -45,7 +33,7 @@ public class SchemataController {
     @GetMapping("/findAllDB")
     public SchemataView findAll(){
         log.info("come in SchemataView");
-        return schemataService.getAll();
+        return schemataApi.getAll();
     }
 
     /**
@@ -56,7 +44,7 @@ public class SchemataController {
     @GetMapping("/findTable")
     public TableView findTableByDB(String dbName){
         log.info("come in findTableByDB");
-        return tableService.findTableByDB(dbName);
+        return schemataApi.findTableByDB(dbName);
     }
 
     /**
@@ -67,7 +55,7 @@ public class SchemataController {
     @GetMapping("/findColum")
     public ColumView findColumByTB(TableReq tableReq){
         log.info("come in findColumByTB");
-        return columnService.findTableByTB(tableReq);
+        return schemataApi.findColumByTB(tableReq);
     }
 
     /**
@@ -76,32 +64,17 @@ public class SchemataController {
      */
     @PostMapping("/create")
     public DataVo createBean(@RequestBody TagReq tagReq){
-        log.info("come in createBean");
-        ViewInfo viewInfo = new ViewInfo();
-        ColumView columView = new ColumView();
-        columView.setDbName(tagReq.getDbName());
-        columView.setTableName(tagReq.getTableName());
-        viewInfo.setColumView(columView);
-        TagVo tagVo = new TagVo();
-        List<TagInfo> entityTag = new ArrayList<>();
-        tagReq.getEntityList().forEach(s -> {
-            TagInfo tagInfo = new TagInfo();
-            tagInfo.setName(s);
-            entityTag.add(tagInfo);
-        });
-        tagVo.setEntityTag(entityTag);
-        List<TagInfo> propertyTag = new ArrayList<>();
-        tagReq.getPropertyList().forEach(s -> {
-            TagInfo tagInfo = new TagInfo();
-            tagInfo.setName(s);
-            propertyTag.add(tagInfo);
-        });
-        tagVo.setPropertyTag(propertyTag);
-        viewInfo.setTagVo(tagVo);
-        viewInfo.setClassName(tagReq.getClassName());
-        viewInfo.setPackageName(tagReq.getPackageName());
-        viewInfo.setPath(tagReq.getPath());
-        String url = allocationService.createBean(viewInfo);
+        String url = schemataApi.createBean(tagReq);
         return new DataVo("0000","SUCCESS",url);
+    }
+
+    /**
+     * 查询配置的标签
+     * @return
+     */
+    @GetMapping("/tag")
+    public DataVo findAnnotation(){
+        AnnotationView view = schemataApi.findAnnotation();
+        return new DataVo("0000","SUCCESS",view);
     }
 }

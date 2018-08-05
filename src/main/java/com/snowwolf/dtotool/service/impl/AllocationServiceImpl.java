@@ -10,9 +10,8 @@ import com.snowwolf.dtotool.tool.ViewInfo;
 import com.snowwolf.dtotool.view.ColumView;
 import com.snowwolf.dtotool.view.tag.TagInfoView;
 import com.snowwolf.dtotool.view.tag.TagView;
-import com.snowwolf.dtotool.yml.GetAnnotationYml;
+import com.snowwolf.dtotool.yml.rule.GetAnnotation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -35,7 +34,7 @@ public class AllocationServiceImpl implements IAllocationService {
     private final String customEntityMap = "2";
     private final String custPropertyMap = "3";
     @Resource
-    private GetAnnotationYml getAnnotationYml;
+    private GetAnnotation getAnnotationYml;
     @Resource
     private IColumnService columnService;
     @Override

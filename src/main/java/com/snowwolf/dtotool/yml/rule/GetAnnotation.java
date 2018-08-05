@@ -1,4 +1,4 @@
-package com.snowwolf.dtotool.yml;
+package com.snowwolf.dtotool.yml.rule;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,13 +15,12 @@ import java.util.Map;
  * @versions：0.1.0
  */
 @Configuration
-@ConfigurationProperties(prefix = "tag",ignoreUnknownFields = false)
-@PropertySource(value ={"classpath:annotation/annotation.properties",
-        "classpath:annotation/custom_entity.properties",
-        "classpath:annotation/custom_property.properties"},
+@ConfigurationProperties(prefix = "rule",ignoreUnknownFields = false)
+@PropertySource(value ={"classpath:rule/annotation.properties",
+        "classpath:rule/custom.properties"},
         ignoreResourceNotFound = true)
 @Data
-public class GetAnnotationYml {
+public class GetAnnotation {
     private Map<String,String> defaultEntityMap;
     private Map<String,String> defaultPropertyMap;
     private Map<String,String> customEntityMap;

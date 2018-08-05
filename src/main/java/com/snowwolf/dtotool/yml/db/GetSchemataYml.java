@@ -1,4 +1,4 @@
-package com.snowwolf.dtotool.yml;
+package com.snowwolf.dtotool.yml.db;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

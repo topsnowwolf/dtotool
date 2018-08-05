@@ -1,8 +1,7 @@
 package com.snowwolf.dtotool.config;
 
-import com.snowwolf.dtotool.yml.GetMapperYml;
-import com.snowwolf.dtotool.yml.GetMockYml;
-import com.snowwolf.dtotool.yml.GetSchemataYml;
+import com.snowwolf.dtotool.yml.mapper.GetMapperYml;
+import com.snowwolf.dtotool.yml.db.GetSchemataYml;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
