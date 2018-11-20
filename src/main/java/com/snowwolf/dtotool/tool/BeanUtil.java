@@ -65,7 +65,20 @@ public class BeanUtil {
 //                String name = GetNameYml.getEntity();
                 String name = GetRule.customEntityName;
 //                className = GetNameYml.getEntity().replace("$",tbName);
-                className = GetRule.customEntityName.replace("$",tbName);
+                if(StringUtils.isEmpty(viewInfo.getBeanType())){
+                    className = GetRule.customEntityName.replace("$",tbName);
+                }else {
+                    if("Eo".equals(viewInfo.getTagVo())){
+                        className = tbName+"Eo";
+                    }else if("Vo".equals(viewInfo.getTagVo())){
+                        className = tbName+"Vo";
+                    }else if("Dto".equals(viewInfo.getTagVo())){
+                        className = tbName+"Dto";
+                    }else {
+                        className = GetRule.customEntityName.replace("$",tbName);
+                    }
+                }
+
             }
             String entityName = className;
             //设置实体类的包路径，当为空根据yml配置url命名来设置，当保存的路径包含"main\\java\\",设置包路径就是java后面的路径，没有包含，就是path。
@@ -133,7 +146,7 @@ public class BeanUtil {
             //继承，实现控制
             Map<String,String> extendsMap = GetRule.customEntityExtends;
             Map<String,String> entityImplMap = GetRule.customEntityImpl;
-            if(extendsMap != null){
+            if(extendsMap != null&&"Eo".equals(viewInfo.getBeanType())){
                 if(extendsMap.size()>1){
                     new RuntimeException("bean继承的类只能配置一个，请把namingRule.properties配置中的配置修改一下！");
                 }

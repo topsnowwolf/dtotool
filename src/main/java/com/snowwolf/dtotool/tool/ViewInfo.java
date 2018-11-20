@@ -12,6 +12,7 @@ import lombok.Data;
  */
 @Data
 public class ViewInfo {
+    private String beanType;
     private ColumView columView;
     private String className;
     private String packageName;

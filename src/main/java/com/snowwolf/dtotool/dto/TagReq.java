@@ -22,6 +22,7 @@ public class TagReq {
     private String tableName;
     private String className;
     private String packageName;
+    private String beanType;
     /**
      * 必传
      */
