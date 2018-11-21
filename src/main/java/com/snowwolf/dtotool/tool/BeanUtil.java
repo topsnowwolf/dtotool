@@ -68,11 +68,11 @@ public class BeanUtil {
                 if(StringUtils.isEmpty(viewInfo.getBeanType())){
                     className = GetRule.customEntityName.replace("$",tbName);
                 }else {
-                    if("Eo".equals(viewInfo.getTagVo())){
+                    if("Eo".equals(viewInfo.getBeanType())){
                         className = tbName+"Eo";
-                    }else if("Vo".equals(viewInfo.getTagVo())){
+                    }else if("Vo".equals(viewInfo.getBeanType())){
                         className = tbName+"Vo";
-                    }else if("Dto".equals(viewInfo.getTagVo())){
+                    }else if("Dto".equals(viewInfo.getBeanType())){
                         className = tbName+"Dto";
                     }else {
                         className = GetRule.customEntityName.replace("$",tbName);

@@ -85,6 +85,7 @@ public class SchemataApiImpl  implements ISchemataApi {
         viewInfo.setClassName(tagReq.getClassName());
         viewInfo.setPackageName(tagReq.getPackageName());
         viewInfo.setPath(tagReq.getPath());
+        viewInfo.setBeanType(tagReq.getBeanType());
         return allocationService.createBean(viewInfo);
     }
 
